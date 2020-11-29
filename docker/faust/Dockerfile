@@ -24,5 +24,5 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # copy source files
-COPY bin/wait-for.sh ./bin/wait-for.sh
-RUN chmod u+x ./bin/wait-for.sh
+COPY bin/wait-for/ ./bin/wait-for/
+RUN chmod u+x ./bin/wait-for/wait-for.sh
