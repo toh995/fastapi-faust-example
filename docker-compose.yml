@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+
+  fastapi:
+    build:
+      context: ./
+      dockerfile: ./docker/fastapi/Dockerfile
+    ports:
+      - "8000:8000"
+    working_dir: /fastapi-faust-example/
+    environment:
+      PYTHONPATH: "/fastapi-faust-example/"
+      FAUST_BROKER_URL: "kafka://kafka:29092"
+    depends_on:
+      - kafka
+
+  faust:
+    build:
+      context: ./
+      dockerfile: ./docker/faust/Dockerfile
+    working_dir: /fastapi-faust-example/
+    environment:
+      PYTHONPATH: "/fastapi-faust-example/"
+      FAUST_BROKER_URL: "kafka://kafka:29092"
+    depends_on:
+      - kafka
+
+  kafka:
+    image: confluentinc/cp-kafka:6.0.0
+    ports:
+      - "29092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+      - kafka-secrets:/etc/kafka/secrets
+    depends_on:
+      - zookeeper
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.0.0
+    ports:
+      - "32181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 32181
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-log:/var/lib/zookeeper/log
+      - zookeeper-secrets:/etc/zookeeper/secrets
+
+volumes:
+  kafka-data:
+  kafka-secrets:
+  zookeeper-data:
+  zookeeper-log:
+  zookeeper-secrets:
