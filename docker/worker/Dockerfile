@@ -18,11 +18,22 @@ RUN pip uninstall pip-autoremove -y
 
 RUN rm Pipfile Pipfile.lock
 
-# install netcat (needed for the wait script)
+# install python-rocksdb
+ARG ROCKSDB_DEPENDENCIES="g++ libbz2-dev liblz4-dev libsnappy-dev libz-dev"
+
+RUN apt-get update \
+  && apt-get install -y $ROCKSDB_DEPENDENCIES \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN pip install python-rocksdb==0.7.0
+
+# set up the wait script
 RUN apt-get update \
   && apt-get install -y netcat \
   && rm -rf /var/lib/apt/lists/*
 
-# copy source files
 COPY bin/wait-for/ ./bin/wait-for/
 RUN chmod u+x ./bin/wait-for/wait-for.sh
+
+# copy source files
+COPY app ./app

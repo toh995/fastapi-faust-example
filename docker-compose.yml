@@ -2,24 +2,32 @@ version: "3.8"
 
 services:
 
-  fastapi:
+  api:
     build:
       context: ./
-      dockerfile: ./docker/fastapi/Dockerfile
+      dockerfile: docker/api/Dockerfile
     ports:
       - "8000:8000"
     working_dir: /fastapi-faust-example/
+    command: sh -c "
+      sh ./bin/wait-for/wait-for.sh kafka:29092 --timeout=20
+        && python app/api.py
+      "
     environment:
       PYTHONPATH: "/fastapi-faust-example/"
       FAUST_BROKER_URL: "kafka://kafka:29092"
     depends_on:
       - kafka
 
-  faust:
+  worker:
     build:
       context: ./
-      dockerfile: ./docker/faust/Dockerfile
+      dockerfile: docker/worker/Dockerfile
     working_dir: /fastapi-faust-example/
+    command: sh -c "
+      sh ./bin/wait-for/wait-for.sh kafka:29092 --timeout=20
+        && python -m app.worker worker -l info
+      "
     environment:
       PYTHONPATH: "/fastapi-faust-example/"
       FAUST_BROKER_URL: "kafka://kafka:29092"

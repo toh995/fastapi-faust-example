@@ -17,11 +17,13 @@ RUN pip uninstall pip-autoremove -y
 
 RUN rm Pipfile Pipfile.lock
 
-# install netcat (needed for the wait script)
+# set up the wait script
 RUN apt-get update \
   && apt-get install -y netcat \
   && rm -rf /var/lib/apt/lists/*
 
-# copy source files
 COPY bin/wait-for/ ./bin/wait-for/
 RUN chmod u+x ./bin/wait-for/wait-for.sh
+
+# copy source files
+COPY app ./app
