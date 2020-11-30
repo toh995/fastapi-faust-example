@@ -28,6 +28,8 @@ def set_faust_app_for_worker() -> Optional[faust.App]:
 def set_faust_app_for_api() -> Optional[faust.App]:
     global _faust_app
 
+    # NOTE: the loop argument is needed to ensure that the faust app instance
+    # is running in the same event loop as the FastAPI instance.
     _faust_app = faust.App(
         "worker",
         broker=os.getenv("FAUST_BROKER_URL"),
