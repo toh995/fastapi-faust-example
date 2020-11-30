@@ -1,5 +1,5 @@
 # this image has both python and rocksDB installed
-FROM toh995/rocksdb-python:latest
+FROM toh995/rocksdb-python:6.14.5_3.8.6-slim-buster
 
 WORKDIR /fastapi-faust-example
 
