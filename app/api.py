@@ -22,6 +22,12 @@ async def startup():
         faust_app.start_client()
     )
 
+@fastapi_app.on_event("shutdown")
+async def shutdown():
+    faust_app = worker.get_faust_app()
+
+    # graceful shutdown
+    await faust_app.stop()
 
 @fastapi_app.get("/", response_class=HTMLResponse)
 async def entrypoint():
